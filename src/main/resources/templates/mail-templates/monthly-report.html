@@ -1,0 +1,28 @@
+<!--/*@thymesVar id="month" type="java.time.Month"*/-->
+<!--/*@thymesVar id="year" type="java.time.Year"*/-->
+<!--/*@thymesVar id="description" type="java.lang.String"*/-->
+<!--/*@thymesVar id="managedDocuments" type="java.util.List"*/-->
+<!--/*@thymesVar id="managedDocument" type="pro.b2borganizer.services.documents.entity.ManagedDocument"*/-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    </head>
+    <body>
+        <p>Dzień dobry,</p>
+        <p>
+            W załącznikach znajdują się dokumenty za miesiąc <strong th:text="${month}"/>/<strong th:text="${year}"/>.
+        </p>
+        <p th:text="${description}" />
+        <ul>
+            <li th:each="managedDocument : ${managedDocuments}"
+               th:if="${!#strings.isEmpty(managedDocument.comment)}"
+               th:text="${managedDocument.managedFile.fileName} + ': ' + ${managedDocument.comment}">
+            </li>
+        </ul>
+        <p>
+            Z poważaniem,<br />
+            Piotr Raszkowski
+        </p>
+    </body>
+</html>
