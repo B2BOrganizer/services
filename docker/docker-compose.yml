@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  b2borganizer-services:
+    image: b2borganizer-services:0.0.1-SNAPSHOT
+    container_name: b2borganizer-services
+    ports:
+      - 8080:8080
+    networks:
+      - mongo-network
+    environment:
+      - SPRING_APPLICATION_JSON=${SPRING_APPLICATION_JSON}
+networks:
+  mongo-network:
+    name: 'mongo-network'
+    external: true
