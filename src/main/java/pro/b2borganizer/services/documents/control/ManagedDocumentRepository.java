@@ -11,7 +11,7 @@ import pro.b2borganizer.services.documents.entity.ManagedDocument;
 @Repository
 public interface ManagedDocumentRepository extends MongoRepository<ManagedDocument, String> {
 
-    List<ManagedDocument> findBySentBetween(LocalDate from, LocalDate to);
+    List<ManagedDocument> findByReceivedBetween(LocalDate from, LocalDate to);
 
     Optional<ManagedDocument> findOptionalById(String id);
 }

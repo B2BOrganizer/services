@@ -38,7 +38,7 @@ public class MailMonthlyReportMapper {
         LocalDate from = yearMonth.atDay(1);
         LocalDate to = yearMonth.atEndOfMonth();
 
-        List<ManagedDocument> managedDocuments = managedDocumentRepository.findBySentBetween(from, to);
+        List<ManagedDocument> managedDocuments = managedDocumentRepository.findByReceivedBetween(from, to);
 
         Template template = foundTemplate.get();
 
