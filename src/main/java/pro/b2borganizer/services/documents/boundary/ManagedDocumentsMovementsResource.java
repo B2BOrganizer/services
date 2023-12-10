@@ -1,6 +1,7 @@
 package pro.b2borganizer.services.documents.boundary;
 
 import java.text.MessageFormat;
+import java.time.LocalTime;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
@@ -33,7 +34,7 @@ public class ManagedDocumentsMovementsResource {
 
         managedDocumentRepository.findByReceivedBetween(newManagedDocumentsMovement.getReceivedFrom(), newManagedDocumentsMovement.getReceivedTo())
                 .forEach(managedDocument -> {
-                    managedDocument.setReceived(newManagedDocumentsMovement.getNewReceived());
+                    managedDocument.setReceived(newManagedDocumentsMovement.getNewReceived().atTime(LocalTime.now()));
                     managedDocumentRepository.save(managedDocument);
                 });
     }

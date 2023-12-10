@@ -16,5 +16,5 @@ public class NewManagedDocumentsMovement {
 
     private LocalDate receivedTo;
 
-    private LocalDateTime newReceived;
+    private LocalDate newReceived;
 }
