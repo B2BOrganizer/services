@@ -1,5 +1,6 @@
 package pro.b2borganizer.services.mails.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Getter;
@@ -18,5 +19,5 @@ public class MailToSend {
 
     private String to;
 
-    private List<ManagedFile> attachments;
+    private List<ManagedFile> attachments = new ArrayList<>();
 }

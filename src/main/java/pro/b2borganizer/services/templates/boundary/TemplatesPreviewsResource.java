@@ -35,6 +35,6 @@ public class TemplatesPreviewsResource {
 
         return ResponseEntity.status(HttpStatus.OK)
                 .contentType(MediaType.parseMediaType(template.getContentType()))
-                .body(templateParser.parse(template.getId(), templatePreviewInput.getVariables()));
+                .body(templateParser.parseById(template.getId(), templatePreviewInput.getVariables()));
     }
 }

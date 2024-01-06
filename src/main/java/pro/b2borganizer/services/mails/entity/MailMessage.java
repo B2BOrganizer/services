@@ -34,11 +34,11 @@ public class MailMessage {
 
     private String htmlContent;
 
-    private List<MailAttachment> contentRelatedMailAttachments;
+    private List<MailAttachment> contentRelatedMailAttachments = new ArrayList<>();
 
-    private List<MailAttachment> mailAttachments;
+    private List<MailAttachment> mailAttachments = new ArrayList<>();
 
-    private List<MailParseError> mailParseErrors;
+    private List<MailParseError> mailParseErrors = new ArrayList<>();
 
     public void addContentRelatedMailAttachment(MailAttachment mailAttachment) {
         if (contentRelatedMailAttachments == null) {

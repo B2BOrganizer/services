@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.MessageChannels;
 import org.springframework.integration.mail.ImapMailReceiver;
+import org.springframework.integration.mail.MailReceiver;
 import org.springframework.integration.mail.dsl.ImapMailInboundChannelAdapterSpec;
 import org.springframework.integration.mail.dsl.Mail;
 
@@ -29,7 +30,6 @@ public class MailFlowConfiguration {
         javaMailProperties.put("mail.debug", "false");
 
         URLName urlName = new URLName(mailReceiverProperties.protocol(), mailReceiverProperties.host(), mailReceiverProperties.port(), mailReceiverProperties.folder(), mailReceiverProperties.username(), mailReceiverProperties.password());
-
         ImapMailReceiver imapMailReceiver = new ImapMailReceiver();
         imapMailReceiver.setJavaMailProperties(javaMailProperties);
 

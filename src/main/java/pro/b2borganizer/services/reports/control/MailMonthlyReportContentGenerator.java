@@ -21,6 +21,6 @@ public class MailMonthlyReportContentGenerator {
         variables.put("managedDocuments", mailMonthlyReport.getManagedDocuments());
         variables.putAll(mailMonthlyReport.getTemplateVariables());
 
-        return templateParser.parse(mailMonthlyReport.getTemplateId(), variables);
+        return templateParser.parseById(mailMonthlyReport.getTemplateId(), variables);
     }
 }

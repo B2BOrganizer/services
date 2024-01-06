@@ -17,13 +17,24 @@ public class TemplateParser {
 
     private final TemplateRepository templateRepository;
 
-    public String parse(String templateId, Map<String, Object> variables) {
+    public String parseById(String templateId, Map<String, Object> variables) {
         Template template = templateRepository.findById(templateId)
                 .orElseThrow();
 
+        return parse(template, variables);
+    }
+
+    private String parse(Template template, Map<String, Object> variables) {
         Context context = new Context();
         context.setVariables(variables);
 
         return springTemplateEngine.process(template.getPath(), context);
+    }
+
+    public String parseByCode(String templateCode, Map<String, Object> variables) {
+        Template template = templateRepository.findByCode(templateCode)
+                .orElseThrow();
+
+        return parse(template, variables);
     }
 }

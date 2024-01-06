@@ -10,21 +10,27 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.Part;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeMultipart;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.stereotype.Component;
+import pro.b2borganizer.services.errors.boundary.MailProcessingErrorReporter;
 import pro.b2borganizer.services.mails.entity.MailAttachment;
 import pro.b2borganizer.services.mails.entity.MailMessage;
 import pro.b2borganizer.services.files.entity.ManagedFile;
 import pro.b2borganizer.services.mails.entity.MailMessageError;
 import pro.b2borganizer.services.mails.entity.MailParseError;
 import pro.b2borganizer.services.mails.entity.MailParserException;
+import pro.b2borganizer.services.mails.entity.UnknownMultipartException;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class MimeMessageParser {
+
+    private final MailProcessingErrorReporter mailProcessingErrorReporter;
 
     /**
      * https://i.stack.imgur.com/JlQ40.png
@@ -40,7 +46,7 @@ public class MimeMessageParser {
      * @param mimeMessage
      * @return
      */
-    public MailMessage parse(MimeMessage mimeMessage) throws MailParserException {
+    public MailMessage parse(MimeMessage mimeMessage) throws MailParserException, UnknownMultipartException {
         try {
             log.info("Parsing mime message with id = {}, flags = {}.", mimeMessage.getMessageID(), mimeMessage.getFlags());
 
@@ -64,11 +70,12 @@ public class MimeMessageParser {
                     parseMultipartAlternative(mimeMessage, mailMessage);
                 } else {
                     log.warn("Unknown multipart = {}!", mimeMessage.getContentType());
-
                     MailParseError mailParseError = new MailParseError();
                     mailParseError.setDescription(MessageFormat.format("Unknown multipart = {0}!", mimeMessage.getContentType()));
 
                     mailMessage.addMailParseError(mailParseError);
+
+                    throw new UnknownMultipartException(mailMessage, mimeMessage.getContentType());
                 }
             } else {
                 log.info("Mail is not multipart = {}.", mimeMessage.getContentType());

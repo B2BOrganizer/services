@@ -1,0 +1,25 @@
+<!--/*@thymesVar id="mailMessageId" type="java.lang.String"*/-->
+<!--/*@thymesVar id="message" type="java.lang.String"*/-->
+<!--/*@thymesVar id="stacktrace" type="java.lang.String"*/-->
+<!--/*@thymesVar id="content" type="java.lang.String"*/-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    </head>
+    <body>
+        <p th:text="${'Identyfikator maila w bazie danych: ' + mailMessageId}" />
+        <p th:text="${message}" />
+
+        <p th:if="${!#strings.isEmpty(stacktrace)}">Stacktrace:</p>
+        <pre th:if="${!#strings.isEmpty(stacktrace)}" th:text="${stacktrace}" />
+
+        <p th:if="${!#strings.isEmpty(content)}">Content:</p>
+        <pre th:if="${!#strings.isEmpty(content)}" th:text="${content}" />
+
+        <p>
+            Z poważaniem,<br />
+            Piotr Raszkowski
+        </p>
+    </body>
+</html>
