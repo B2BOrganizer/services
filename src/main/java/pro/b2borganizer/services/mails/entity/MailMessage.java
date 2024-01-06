@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -20,6 +21,7 @@ public class MailMessage {
     private String id;
 
     @ToString.Exclude
+    @JsonIgnore
     private String serializedMimeMessage;
 
     private String subject;
@@ -30,8 +32,10 @@ public class MailMessage {
 
     private LocalDateTime sent;
 
+    @JsonIgnore
     private String plainTextContent;
 
+    @JsonIgnore
     private String htmlContent;
 
     private List<MailAttachment> contentRelatedMailAttachments = new ArrayList<>();
