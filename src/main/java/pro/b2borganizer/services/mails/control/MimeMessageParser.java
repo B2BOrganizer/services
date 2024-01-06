@@ -23,7 +23,6 @@ import pro.b2borganizer.services.files.entity.ManagedFile;
 import pro.b2borganizer.services.mails.entity.MailMessageError;
 import pro.b2borganizer.services.mails.entity.MailParseError;
 import pro.b2borganizer.services.mails.entity.MailParserException;
-import pro.b2borganizer.services.mails.entity.UnknownMultipartException;
 
 @Slf4j
 @Component
@@ -46,7 +45,7 @@ public class MimeMessageParser {
      * @param mimeMessage
      * @return
      */
-    public MailMessage parse(MimeMessage mimeMessage) throws MailParserException, UnknownMultipartException {
+    public MailMessage parse(MimeMessage mimeMessage) throws MailParserException {
         try {
             log.info("Parsing mime message with id = {}, flags = {}.", mimeMessage.getMessageID(), mimeMessage.getFlags());
 
@@ -68,14 +67,18 @@ public class MimeMessageParser {
                     log.info("Mail is multipart/alternative = {}.", mimeMessage.getContentType());
 
                     parseMultipartAlternative(mimeMessage, mailMessage);
+                } else if (mimeMessage.isMimeType("multipart/signed")) {
+                    log.info("Mail is multipart/signed = {}.", mimeMessage.getContentType());
+
+                    parseMultipartSigned(mimeMessage, mailMessage);
                 } else {
                     log.warn("Unknown multipart = {}!", mimeMessage.getContentType());
+                    String message = MessageFormat.format("Unknown multipart = {0}!", mimeMessage.getContentType());
+
                     MailParseError mailParseError = new MailParseError();
-                    mailParseError.setDescription(MessageFormat.format("Unknown multipart = {0}!", mimeMessage.getContentType()));
+                    mailParseError.setDescription(message);
 
                     mailMessage.addMailParseError(mailParseError);
-
-                    throw new UnknownMultipartException(mailMessage, mimeMessage.getContentType());
                 }
             } else {
                 log.info("Mail is not multipart = {}.", mimeMessage.getContentType());
@@ -113,22 +116,25 @@ public class MimeMessageParser {
 
                     parseMultipartRelated(bodyPart, mailMessage);
                 } else {
-                    log.warn("Unknown multipart = {} found inside multipart/mixed!", bodyPart.getContentType());
+                    log.error("Unknown multipart = {} found inside multipart/mixed with disposition = {}!", bodyPart.getContentType(), bodyPart.getDisposition());
+                    String message = MessageFormat.format("Unknown multipart = {0} found inside multipart/mixed with disposition = {1}!", bodyPart.getContentType(), bodyPart.getDisposition());
+
                     MailParseError mailParseError = new MailParseError();
-                    mailParseError.setDescription(MessageFormat.format("Unknown part = {0} found for multipart/mixed content with disposition = {}!", bodyPart.getContentType(), bodyPart.getDisposition()));
+                    mailParseError.setDescription(message);
 
                     mailMessage.addMailParseError(mailParseError);
-
                 }
             } else if (Part.ATTACHMENT.equalsIgnoreCase(bodyPart.getDisposition())) {
                 log.info("Mail attachment found fit filename = {}, content type = {}.", bodyPart.getFileName(), bodyPart.getContentType());
                 MailAttachment mailAttachment = buildMailAttachment(bodyPart);
                 mailMessage.addMailAttachment(mailAttachment);
             } else {
-                log.warn("Unknown part = {} found for multipart/mixed content with disposition = {}!", bodyPart.getContentType(), bodyPart.getDisposition());
+                log.warn("Unknown body part = {} found for multipart/mixed content with disposition = {}!", bodyPart.getContentType(), bodyPart.getDisposition());
+
+                String message = MessageFormat.format("Unknown body part = {0} found for multipart/mixed content with disposition = {1}!", bodyPart.getContentType(), bodyPart.getDisposition());
 
                 MailParseError mailParseError = new MailParseError();
-                mailParseError.setDescription(MessageFormat.format("Unknown part = {0} found for multipart/mixed content with disposition = {}!", bodyPart.getContentType(), bodyPart.getDisposition()));
+                mailParseError.setDescription(message);
 
                 mailMessage.addMailParseError(mailParseError);
             }
@@ -148,6 +154,43 @@ public class MimeMessageParser {
         return mailAttachment;
     }
 
+    private void parseMultipartSigned(Part part, MailMessage mailMessage) throws MessagingException, IOException {
+        MimeMultipart mimeMultipart = (MimeMultipart) part.getContent();
+
+        for (int i = 0; i < mimeMultipart.getCount(); i++) {
+            BodyPart bodyPart = mimeMultipart.getBodyPart(i);
+
+            if (bodyPart.isMimeType("multipart/*")) {
+                if (bodyPart.isMimeType("multipart/mixed")) {
+                    log.info("Mime multipart/mixed found inside multipart/signed = {}.", bodyPart.getContentType());
+
+                    parseMultipartMixed(bodyPart, mailMessage);
+                } else {
+                    log.warn("Unexpected multipart = {} found inside multipart/signed with disposition = {}!", bodyPart.getContentType(), bodyPart.getDisposition());
+                    String message = MessageFormat.format("Unexpected multipart = {0} found inside multipart/signed with disposition = {1}!", bodyPart.getContentType(), bodyPart.getDisposition());
+
+                    MailParseError mailParseError = new MailParseError();
+                    mailParseError.setDescription(message);
+
+                    mailMessage.addMailParseError(mailParseError);
+                }
+            } else if (Part.ATTACHMENT.equalsIgnoreCase(bodyPart.getDisposition())) {
+                log.info("Mail attachment found fit filename = {}, content type = {}.", bodyPart.getFileName(), bodyPart.getContentType());
+                MailAttachment mailAttachment = buildMailAttachment(bodyPart);
+                mailMessage.addMailAttachment(mailAttachment);
+            } else {
+                log.warn("Unknown part = {} found for multipart/signed content with disposition = {}!", bodyPart.getContentType(), bodyPart.getDisposition());
+
+                String message = MessageFormat.format("Unknown part = {0} found for multipart/signed content with disposition = {1}!", bodyPart.getContentType(), bodyPart.getDisposition());
+
+                MailParseError mailParseError = new MailParseError();
+                mailParseError.setDescription(message);
+
+                mailMessage.addMailParseError(mailParseError);
+            }
+        }
+    }
+
     private void parseMultipartAlternative(Part part, MailMessage mailMessage) throws MessagingException, IOException {
         MimeMultipart mimeMultipart = (MimeMultipart) part.getContent();
 
@@ -160,10 +203,15 @@ public class MimeMessageParser {
                 if (bodyPart.isMimeType("multipart/related")) {
                     parseMultipartRelated(bodyPart, mailMessage);
                 } else {
+                    log.error("Unexpected multipart = {} found inside multipart/alternative content!", bodyPart.getContentType());
+
+                    String message = MessageFormat.format("Unexpected multipart = {0} found inside multipart/alternative content!", bodyPart.getContentType());
+
                     MailParseError mailParseError = new MailParseError();
-                    mailParseError.setDescription(MessageFormat.format("Unexpected multipart = {0} found inside multipart/alternative content!", bodyPart.getContentType()));
+                    mailParseError.setDescription(message);
 
                     mailMessage.addMailParseError(mailParseError);
+
                 }
             } else if (bodyPart.isMimeType("text/plain")) {
                 log.info("Plain text found inside multipart/alternative = {}.", bodyPart.getContentType());
@@ -174,8 +222,12 @@ public class MimeMessageParser {
 
                 mailMessage.setHtmlContent((String) bodyPart.getContent());
             } else {
+                log.error("Unexpected content type = {} found inside multipart/alternative content!", bodyPart.getContentType());
+
+                String message = MessageFormat.format("Unexpected content type = {0} found inside multipart/alternative content!", bodyPart.getContentType());
+
                 MailParseError mailParseError = new MailParseError();
-                mailParseError.setDescription(MessageFormat.format("Unexpected content type = {0} found inside multipart/alternative content!", bodyPart.getContentType()));
+                mailParseError.setDescription(message);
 
                 mailMessage.addMailParseError(mailParseError);
             }
@@ -200,13 +252,21 @@ public class MimeMessageParser {
                     log.info("Mime multipart/alternative found inside multipart/related = {}.", bodyPart.getContentType());
                     parseMultipartAlternative(bodyPart, mailMessage);
                 } else {
+                    log.warn("Unexpected multipart = {} found inside multipart/related content!", bodyPart.getContentType());
+
+                    String message = MessageFormat.format("Unexpected multipart = {0} found inside multipart/related content!", bodyPart.getContentType());
+
                     MailParseError mailParseError = new MailParseError();
-                    mailParseError.setDescription(MessageFormat.format("Unexpected multipart = {0} found inside multipart/related content!", bodyPart.getContentType()));
+                    mailParseError.setDescription(message);
                     mailMessage.addMailParseError(mailParseError);
                 }
             } else {
+                log.warn("Unexpected part = {} found inside multipart/related content!", bodyPart.getContentType());
+
+                String message = MessageFormat.format("Unexpected part = {0} found inside multipart/related content!", bodyPart.getContentType());
+
                 MailParseError mailParseError = new MailParseError();
-                mailParseError.setDescription(MessageFormat.format("Unexpected part = {0} found inside multipart/related content!", bodyPart.getContentType()));
+                mailParseError.setDescription(message);
                 mailMessage.addMailParseError(mailParseError);
             }
         }

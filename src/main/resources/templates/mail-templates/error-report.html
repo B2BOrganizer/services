@@ -8,13 +8,10 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     </head>
     <body>
-        <p th:text="${'Identyfikator maila w bazie danych: ' + mailMessageId}" />
-        <p th:text="${message}" />
+        <p th:text="${'Identyfikator maila: ' + mailMessageId}" />
+        <p th:text="${'Komunikat: ' + message}" />
 
-        <p th:if="${!#strings.isEmpty(stacktrace)}">Stacktrace:</p>
-        <pre th:if="${!#strings.isEmpty(stacktrace)}" th:text="${stacktrace}" />
-
-        <p th:if="${!#strings.isEmpty(content)}">Content:</p>
+        <p th:if="${!#strings.isEmpty(content)}">Szczegóły:</p>
         <pre th:if="${!#strings.isEmpty(content)}" th:text="${content}" />
 
         <p>

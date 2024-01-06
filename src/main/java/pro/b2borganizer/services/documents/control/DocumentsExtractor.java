@@ -1,9 +1,12 @@
 package pro.b2borganizer.services.documents.control;
 
 import java.text.MessageFormat;
+import java.util.Set;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FilenameUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import pro.b2borganizer.services.documents.entity.ManagedDocument;
@@ -22,6 +25,9 @@ public class DocumentsExtractor {
 
     private final MailProcessingErrorReporter mailProcessingErrorReporter;
 
+    @Value("#{'${pro.b2borganizer.allowedManagedDocumentExtensions}'.split(',')}")
+    private Set<String> allowedManagedDocumentExceptions;
+
     @EventListener
     public void extractDocuments(MailReceivedEvent mailReceivedEvent) {
         log.info("Extracting documents for = {}.", mailReceivedEvent);
@@ -29,8 +35,6 @@ public class DocumentsExtractor {
         try {
             mailMessageRepository.findById(mailReceivedEvent.getMailMessageId())
                     .ifPresent(mailMessage -> mailMessage.getMailAttachments().stream().map(mailAttachment -> {
-                        log.info("Extracting document = {}.", mailAttachment);
-
                         ManagedDocument managedDocument = new ManagedDocument();
                         managedDocument.setManagedFile(mailAttachment.getManagedFile());
                         managedDocument.setMailMessageId(mailMessage.getId());
@@ -38,7 +42,7 @@ public class DocumentsExtractor {
                         managedDocument.setSent(mailMessage.getSent());
 
                         return managedDocument;
-                    }).forEach(managedDocument -> {
+                    }).filter(managedDocument -> allowedManagedDocumentExceptions.contains(FilenameUtils.getExtension(managedDocument.getManagedFile().getFileName()))).forEach(managedDocument -> {
                         log.info("Document extracted = {}.", managedDocument);
 
                         managedDocumentRepository.save(managedDocument);

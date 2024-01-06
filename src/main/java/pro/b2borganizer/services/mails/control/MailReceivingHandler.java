@@ -31,7 +31,7 @@ public class MailReceivingHandler {
         log.error("Error happened = {}.", message);
 
         if (message.getPayload() instanceof MimeMessage mimeMessage) {
-            mailProcessingErrorReporter.reportError(mimeMessage, "Error while processing mail message");
+            mailProcessingErrorReporter.reportError(mimeMessage, "Fatal error while processing mail message!");
         }
 
     }

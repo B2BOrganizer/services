@@ -67,4 +67,8 @@ public class MailMessage {
 
         mailParseErrors.add(mailParseError);
     }
+
+    public boolean hasErrors() {
+        return mailParseErrors != null && !mailParseErrors.isEmpty();
+    }
 }
