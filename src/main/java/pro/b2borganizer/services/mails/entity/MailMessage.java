@@ -71,4 +71,12 @@ public class MailMessage {
     public boolean hasErrors() {
         return mailParseErrors != null && !mailParseErrors.isEmpty();
     }
+
+    public void appendPlainText(String plainText) {
+        if (plainTextContent == null) {
+            plainTextContent = "";
+        }
+
+        plainTextContent += plainText;
+    }
 }

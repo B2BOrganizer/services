@@ -41,6 +41,7 @@ public class MimeMessageParser {
      *         text/html - the html version of the main message body
      *         image/jpeg - an image referenced by the main body
      *     application/octet-stream (or whatever) - the attachment
+     *     text/plain
      *
      * @param mimeMessage
      * @return
@@ -124,10 +125,14 @@ public class MimeMessageParser {
 
                     mailMessage.addMailParseError(mailParseError);
                 }
-            } else if (Part.ATTACHMENT.equalsIgnoreCase(bodyPart.getDisposition())) {
-                log.info("Mail attachment found fit filename = {}, content type = {}.", bodyPart.getFileName(), bodyPart.getContentType());
+            } else if (Part.ATTACHMENT.equalsIgnoreCase(bodyPart.getDisposition()) || Part.INLINE.equalsIgnoreCase(bodyPart.getDisposition())) {
+                log.info("Mail attachment found for filename = {}, content type = {}, disposition = {}.", bodyPart.getFileName(), bodyPart.getContentType(), bodyPart.getDisposition());
                 MailAttachment mailAttachment = buildMailAttachment(bodyPart);
                 mailMessage.addMailAttachment(mailAttachment);
+            } else if (bodyPart.isMimeType("text/plain")) {
+                log.info("Plain text found inside multipart/mixed with lines = {}.", bodyPart.getLineCount());
+                String plainTextContent = (String) bodyPart.getContent();
+                mailMessage.appendPlainText(plainTextContent);
             } else {
                 log.warn("Unknown body part = {} found for multipart/mixed content with disposition = {}!", bodyPart.getContentType(), bodyPart.getDisposition());
 
