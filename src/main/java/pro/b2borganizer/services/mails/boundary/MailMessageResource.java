@@ -34,11 +34,11 @@ public class MailMessageResource {
         Query query = new Query();
 
         if (from != null && to != null) {
-            query.addCriteria(Criteria.where("received").gte(from).lte(to));
+            query.addCriteria(Criteria.where("received").gte(from).lt(to));
         } else if (from != null) {
             query.addCriteria(Criteria.where("received").gte(from));
         } else if (to != null) {
-            query.addCriteria(Criteria.where("received").lte(to));
+            query.addCriteria(Criteria.where("received").lt(to));
         }
 
         return mongoTemplate.find(query, MailMessage.class);

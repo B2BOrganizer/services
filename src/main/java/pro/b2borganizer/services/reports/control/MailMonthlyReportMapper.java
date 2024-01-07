@@ -36,7 +36,7 @@ public class MailMonthlyReportMapper {
 
         YearMonth yearMonth = YearMonth.of(newMailMonthlyReport.getYear(), newMailMonthlyReport.getMonth());
         LocalDate from = yearMonth.atDay(1);
-        LocalDate to = yearMonth.atEndOfMonth();
+        LocalDate to = yearMonth.plusMonths(1).atDay(1);
 
         List<ManagedDocument> managedDocuments = managedDocumentRepository.findByReceivedBetween(from, to);
 
