@@ -30,7 +30,9 @@ public class MailSendingHandler {
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
 
             mimeMessageHelper.setTo(mailToSend.getTo());
-            mimeMessageHelper.setCc(mailToSend.getCc());
+            if (mailToSend.getCc() != null) {
+                mimeMessageHelper.setCc(mailToSend.getCc());
+            }
             mimeMessageHelper.setSubject(mailToSend.getSubject());
             mimeMessageHelper.setText(mailToSend.getContent(), true);
             mailToSend.getAttachments().forEach(managedFile -> {
