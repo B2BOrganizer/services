@@ -4,6 +4,7 @@ services:
   b2borganizer-services:
     image: b2borganizer-services:0.0.1-SNAPSHOT
     container_name: b2borganizer-services
+    restart: always
     ports:
       - 8080:8080
     networks:
