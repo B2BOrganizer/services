@@ -16,6 +16,8 @@ public class NewMailMonthlyReport {
     @NotNull
     private String sendTo;
 
+    private String copyTo;
+
     @NotNull
     private String templateCode;
 

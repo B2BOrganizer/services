@@ -19,5 +19,7 @@ public class MailToSend {
 
     private String to;
 
+    private String cc;
+
     private List<ManagedFile> attachments = new ArrayList<>();
 }

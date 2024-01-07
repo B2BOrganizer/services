@@ -47,6 +47,7 @@ public class MailMonthlyReportMapper {
         mailMonthlyReport.setCreated(LocalDateTime.now());
         mailMonthlyReport.setSent(null);
         mailMonthlyReport.setSendTo(newMailMonthlyReport.getSendTo());
+        mailMonthlyReport.setCopyTo(newMailMonthlyReport.getCopyTo());
         mailMonthlyReport.setTemplateId(template.getId());
         mailMonthlyReport.setContentType(template.getContentType());
         mailMonthlyReport.setTemplateVariables(newMailMonthlyReport.getTemplateVariables());

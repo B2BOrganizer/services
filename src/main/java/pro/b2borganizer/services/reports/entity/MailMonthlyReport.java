@@ -32,6 +32,8 @@ public class MailMonthlyReport {
     @NotNull
     private String sendTo;
 
+    private String copyTo;
+
     @NotNull
     private String templateId;
 

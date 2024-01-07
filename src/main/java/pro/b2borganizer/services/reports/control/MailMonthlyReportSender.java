@@ -32,6 +32,7 @@ public class MailMonthlyReportSender {
 
                     MailToSend mailToSend = new MailToSend();
                     mailToSend.setTo(mailMonthlyReport.getSendTo());
+                    mailToSend.setCc(mailMonthlyReport.getCopyTo());
                     mailToSend.setContent(content);
                     mailToSend.setSubject(mailMonthlyReport.getSubject());
                     mailToSend.setAttachments(mailMonthlyReport.getManagedDocuments().stream().map(ManagedDocument::getManagedFile).toList());
