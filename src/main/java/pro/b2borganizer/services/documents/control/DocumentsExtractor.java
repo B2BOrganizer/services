@@ -1,6 +1,7 @@
 package pro.b2borganizer.services.documents.control;
 
 import java.text.MessageFormat;
+import java.time.YearMonth;
 import java.util.Set;
 
 import lombok.RequiredArgsConstructor;
@@ -40,6 +41,8 @@ public class DocumentsExtractor {
                         managedDocument.setMailMessageId(mailMessage.getId());
                         managedDocument.setReceived(mailMessage.getReceived());
                         managedDocument.setSent(mailMessage.getSent());
+                        managedDocument.setAssignedToYear(mailMessage.getReceived().getYear());
+                        managedDocument.setAssignedToMonth(mailMessage.getReceived().getMonthValue());
 
                         return managedDocument;
                     }).filter(managedDocument -> allowedManagedDocumentExceptions.contains(FilenameUtils.getExtension(managedDocument.getManagedFile().getFileName()))).forEach(managedDocument -> {

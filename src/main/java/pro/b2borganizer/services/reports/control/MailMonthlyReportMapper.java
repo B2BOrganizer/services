@@ -34,11 +34,7 @@ public class MailMonthlyReportMapper {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, MessageFormat.format("Template code = {0} not found!", newMailMonthlyReport.getTemplateCode()));
         }
 
-        YearMonth yearMonth = YearMonth.of(newMailMonthlyReport.getYear(), newMailMonthlyReport.getMonth());
-        LocalDate from = yearMonth.atDay(1);
-        LocalDate to = yearMonth.plusMonths(1).atDay(1);
-
-        List<ManagedDocument> managedDocuments = managedDocumentRepository.findByReceivedBetween(from, to);
+        List<ManagedDocument> managedDocuments = managedDocumentRepository.findByAssignedToYearAndAssignedToMonth(newMailMonthlyReport.getYear(), newMailMonthlyReport.getMonth());
 
         Template template = foundTemplate.get();
 
