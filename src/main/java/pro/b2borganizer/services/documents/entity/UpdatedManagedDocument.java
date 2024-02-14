@@ -1,5 +1,6 @@
 package pro.b2borganizer.services.documents.entity;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import lombok.Getter;
@@ -16,4 +17,6 @@ public class UpdatedManagedDocument {
     private Integer assignedToYear;
 
     private Integer assignedToMonth;
+
+    private String comment;
 }

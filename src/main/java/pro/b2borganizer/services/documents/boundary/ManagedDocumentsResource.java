@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.client.model.Filters;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.binary.Base64;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 import pro.b2borganizer.services.documents.control.ManagedDocumentRepository;
 import pro.b2borganizer.services.documents.entity.ManagedDocument;
 import pro.b2borganizer.services.documents.entity.ManagedDocumentsFilter;
@@ -112,6 +114,20 @@ public class ManagedDocumentsResource {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, MessageFormat.format("Managed document with id = {0} not found.", id)));
     }
 
+    @GetMapping(value = "/{managedDocumentId}/managed-files")
+    public ResponseEntity<StreamingResponseBody> getManagedFile(@PathVariable(value = "managedDocumentId") String managedDocumentId) {
+        log.info("Get managed file for document = {}", managedDocumentId);
+
+        return managedDocumentRepository.findById(managedDocumentId).map(managedDocument -> {
+                    byte[] fileBytes = Base64.decodeBase64(managedDocument.getManagedFile().getContentInBase64());
+
+                    return ResponseEntity.ok()
+                            .header("Content-Disposition", "attachment; filename=" + managedDocument.getManagedFile().getFileName())
+                            .body((StreamingResponseBody) outputStream -> outputStream.write(fileBytes));
+                })
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, MessageFormat.format("Managed document with id = {0} not found.", managedDocumentId)));
+    }
+
     @PutMapping(value = "/{id}", consumes = "application/json+simpleRestProvider")
     public ManagedDocument update(@PathVariable(value = "id") String id, @RequestBody String updated) throws JsonProcessingException {
         UpdatedManagedDocument updatedManagedDocument = objectMapper.readValue(updated, UpdatedManagedDocument.class);
@@ -123,6 +139,7 @@ public class ManagedDocumentsResource {
 
         managedDocument.setAssignedToMonth(updatedManagedDocument.getAssignedToMonth());
         managedDocument.setAssignedToYear(updatedManagedDocument.getAssignedToYear());
+        managedDocument.setComment(updatedManagedDocument.getComment());
 
         return managedDocumentRepository.save(managedDocument);
     }
