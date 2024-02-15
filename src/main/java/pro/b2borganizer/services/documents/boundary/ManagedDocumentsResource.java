@@ -19,6 +19,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.Headers;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -114,20 +115,6 @@ public class ManagedDocumentsResource {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, MessageFormat.format("Managed document with id = {0} not found.", id)));
     }
 
-    @GetMapping(value = "/{managedDocumentId}/managed-files")
-    public ResponseEntity<StreamingResponseBody> getManagedFile(@PathVariable(value = "managedDocumentId") String managedDocumentId) {
-        log.info("Get managed file for document = {}", managedDocumentId);
-
-        return managedDocumentRepository.findById(managedDocumentId).map(managedDocument -> {
-                    byte[] fileBytes = Base64.decodeBase64(managedDocument.getManagedFile().getContentInBase64());
-
-                    return ResponseEntity.ok()
-                            .header("Content-Disposition", "attachment; filename=" + managedDocument.getManagedFile().getFileName())
-                            .body((StreamingResponseBody) outputStream -> outputStream.write(fileBytes));
-                })
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, MessageFormat.format("Managed document with id = {0} not found.", managedDocumentId)));
-    }
-
     @PutMapping(value = "/{id}", consumes = "application/json+simpleRestProvider")
     public ManagedDocument update(@PathVariable(value = "id") String id, @RequestBody String updated) throws JsonProcessingException {
         UpdatedManagedDocument updatedManagedDocument = objectMapper.readValue(updated, UpdatedManagedDocument.class);
@@ -142,6 +129,16 @@ public class ManagedDocumentsResource {
         managedDocument.setComment(updatedManagedDocument.getComment());
 
         return managedDocumentRepository.save(managedDocument);
+    }
+
+    @DeleteMapping(value = "/{id}", consumes = "application/json+simpleRestProvider")
+    public void delete(@PathVariable(value = "id") String id) throws JsonProcessingException {
+        log.info("Deleting managed document = {}.", id);
+
+        ManagedDocument managedDocument = managedDocumentRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, MessageFormat.format("Managed document with id = {0} not found.", id)));
+
+        managedDocumentRepository.delete(managedDocument);
     }
 
     @PatchMapping("/{id}")

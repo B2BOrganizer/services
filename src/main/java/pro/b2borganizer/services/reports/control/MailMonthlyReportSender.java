@@ -1,5 +1,7 @@
 package pro.b2borganizer.services.reports.control;
 
+import java.time.LocalDateTime;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
@@ -9,6 +11,7 @@ import pro.b2borganizer.services.mails.control.MailGateway;
 import pro.b2borganizer.services.mails.entity.MailToSend;
 import pro.b2borganizer.services.reports.entity.MailMonthlyReportCreatedEvent;
 import pro.b2borganizer.services.documents.entity.ManagedDocument;
+import pro.b2borganizer.services.reports.entity.MailMonthlyReportStatus;
 
 @Component
 @Slf4j
@@ -40,6 +43,10 @@ public class MailMonthlyReportSender {
                     log.info("Sending mail: {}", mailToSend);
 
                     mailGateway.sendMail(mailToSend);
+
+                    mailMonthlyReport.setSent(LocalDateTime.now());
+                    mailMonthlyReport.setStatus(MailMonthlyReportStatus.SENT);
+                    mailMonthlyReportRepository.save(mailMonthlyReport);
                 });
     }
 

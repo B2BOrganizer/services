@@ -52,4 +52,12 @@ public class MailMonthlyReport {
     private int year;
 
     private List<ManagedDocument> managedDocuments;
+
+    public Map<String, Object> getTemplateVariables() {
+        if (templateVariables == null) {
+            return Map.of();
+        }
+
+        return templateVariables;
+    }
 }
