@@ -6,6 +6,7 @@ import java.time.YearMonth;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import pro.b2borganizer.services.files.entity.ManagedFile;
@@ -31,4 +32,8 @@ public class ManagedDocument {
     private Integer assignedToMonth;
 
     private String comment;
+
+    public boolean isCommented() {
+        return StringUtils.isNotEmpty(comment);
+    }
 }
