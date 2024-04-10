@@ -55,7 +55,8 @@ dependencies {
 tasks.named('bootBuildImage') {
 	builder = 'paketobuildpacks/builder-jammy-tiny:latest'
 
-	imageName = "${imageName}:${project.version}"
+	imageName = "DUPA"
+//	imageName = "${imageName}:${project.version}"
 }
 
 tasks.named('test') {
