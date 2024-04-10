@@ -59,3 +59,7 @@ tasks.named('bootBuildImage') {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+tasks.bootBuildImage {
+	imageName = "${imageName}:${project.version}"
+}
