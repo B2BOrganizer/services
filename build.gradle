@@ -54,12 +54,10 @@ dependencies {
 
 tasks.named('bootBuildImage') {
 	builder = 'paketobuildpacks/builder-jammy-tiny:latest'
+
+	imageName = "${imageName}:${project.version}"
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
-}
-
-tasks.bootBuildImage {
-	imageName = "${imageName}:${project.version}"
 }
