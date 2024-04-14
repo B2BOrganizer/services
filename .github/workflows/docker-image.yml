@@ -35,7 +35,7 @@ jobs:
       - name: Build the Docker image
         env:
           GITHUB_REPOSITORY_OWNER: ${{ secrets.OSSRH_USERNAME }}
-        run: ./gradlew bootBuildImage --publishImage --debug
+        run: ./gradlew bootBuildImage --publishImage --verbose
 
 #      - name: Push image
 #        run: |
