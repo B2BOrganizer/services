@@ -59,7 +59,8 @@ tasks.named('bootBuildImage') {
 
 	docker {
 		publishRegistry {
-			token = "${System.getenv("GITHUB_REPOSITORY_TOKEN")}"
+			username = "\$"
+			password = "${System.getenv("GITHUB_REPOSITORY_TOKEN")}"
 		}
 	}
 }
