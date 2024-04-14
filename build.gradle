@@ -53,10 +53,10 @@ dependencies {
 }
 
 tasks.named('bootBuildImage') {
-	builder = 'paketobuildpacks/builder-jammy-tiny:latest'
+	imageName = "ghcr.io/${GITHUB_REPOSITORY_WONER}/${project.name}:${project.version}"
 
-	imageName = "DUPA"
-//	imageName = "${imageName}:${project.version}"
+
+//	imageName = "/${project.name}:${project.version}"
 }
 
 tasks.named('test') {

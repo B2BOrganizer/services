@@ -6,8 +6,8 @@ on:
   pull_request:
     branches: [ "main" ]
 
-env:
-  IMAGE_NAME: b2borganizer-services
+#env:
+#  IMAGE_NAME: b2borganizer-services
 
 jobs:
   build:
@@ -33,18 +33,20 @@ jobs:
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $ --password-stdin
 
       - name: Build the Docker image
-        run: ./gradlew bootBuildImage --imageName=$IMAGE_NAME
+        env:
+          GITHUB_REPOSITORY_OWNER: ${{ secrets.OSSRH_USERNAME }}
+        run: ./gradlew bootBuildImage
 
-      - name: Push image
-        run: |
-          IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME
-          IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
-          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
-          
-          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
-          
-          [ "$VERSION" == "main" ] && VERSION=latest
-          echo IMAGE_ID=$IMAGE_ID
-          echo VERSION=$VERSION
+#      - name: Push image
+#        run: |
+#          IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME
+#          IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
+#          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+#
+#          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
+#
+#          [ "$VERSION" == "main" ] && VERSION=latest
+#          echo IMAGE_ID=$IMAGE_ID
+#          echo VERSION=$VERSION
 #          docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
 #          docker push $IMAGE_ID:$VERSION
