@@ -60,7 +60,6 @@ tasks.named('bootBuildImage') {
 	docker {
 		publishRegistry {
 			token = "${System.getenv("GITHUB_REPOSITORY_TOKEN")}"
-//			url = "ghcr.io"
 		}
 	}
 }
