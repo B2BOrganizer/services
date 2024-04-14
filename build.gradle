@@ -55,7 +55,7 @@ dependencies {
 tasks.named('bootBuildImage') {
 	imageName = "ghcr.io/${System.getenv("GITHUB_REPOSITORY_OWNER")}/${project.name}:${project.version}".toLowerCase()
 
-	tags = "ghcr.io/${System.getenv("GITHUB_REPOSITORY_OWNER")}/${project.name}:latest".toLowerCase()
+	tags = ["ghcr.io/${System.getenv("GITHUB_REPOSITORY_OWNER")}/${project.name}:latest".toLowerCase()]
 
 	docker {
 		publishRegistry {
