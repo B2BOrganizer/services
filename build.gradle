@@ -53,7 +53,8 @@ dependencies {
 }
 
 tasks.named('bootBuildImage') {
-	imageName = "ghcr.io/${System.getenv("GITHUB_REPOSITORY_OWNER")}/${project.name}:${project.version}".toLowerCase()
+//	imageName = "ghcr.io/${System.getenv("GITHUB_REPOSITORY_OWNER")}/${project.name}:${project.version}".toLowerCase()
+	imageName = "ghcr.io/${System.getenv("GITHUB_REPOSITORY_OWNER")}/${project.name}:latest"
 
 //	tags = ["ghcr.io/${System.getenv("GITHUB_REPOSITORY_OWNER")}/${project.name}:latest".toLowerCase()]
 
