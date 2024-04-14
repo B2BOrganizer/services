@@ -57,13 +57,12 @@ tasks.named('bootBuildImage') {
 
 	tags = ["ghcr.io/${System.getenv("GITHUB_REPOSITORY_OWNER")}/${project.name}:latest".toLowerCase()]
 
-//	docker {
-//		publishRegistry {
-//			token = ${System.getenv("GITHUB_REPOSITORY_TOKEN")}
-//			utl = "ghcr.io"
-//		}
-//	}
-//	imageName = "/${project.name}:${project.version}"
+	docker {
+		publishRegistry {
+			token = "${System.getenv("GITHUB_REPOSITORY_TOKEN")}"
+			utl = "ghcr.io"
+		}
+	}
 }
 
 tasks.named('test') {
