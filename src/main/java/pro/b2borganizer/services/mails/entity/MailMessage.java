@@ -1,8 +1,13 @@
 package pro.b2borganizer.services.mails.entity;
 
 import java.time.LocalDateTime;
+import java.time.Month;
+import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
@@ -10,6 +15,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import pro.b2borganizer.services.documents.control.MailContentParser;
 
 @Getter
 @Setter
@@ -78,5 +84,16 @@ public class MailMessage {
         }
 
         plainTextContent += plainText;
+    }
+
+    public String getContent() {
+        return Stream.of(plainTextContent, htmlContent)
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElse("");
+    }
+
+    public MailContentParser.AssignedYearMonth getAssignedYearMonth() {
+        return new MailContentParser.AssignedYearMonth(Year.of(getReceived().getYear()), Month.of(getReceived().getMonthValue()));
     }
 }

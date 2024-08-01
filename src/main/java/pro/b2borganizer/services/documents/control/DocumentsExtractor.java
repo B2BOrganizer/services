@@ -26,6 +26,8 @@ public class DocumentsExtractor {
 
     private final MailProcessingErrorReporter mailProcessingErrorReporter;
 
+    private final MailContentParser mailContentParser;
+
     @Value("#{'${pro.b2borganizer.allowedManagedDocumentExtensions}'.split(',')}")
     private Set<String> allowedManagedDocumentExceptions;
 
@@ -41,8 +43,11 @@ public class DocumentsExtractor {
                         managedDocument.setMailMessageId(mailMessage.getId());
                         managedDocument.setReceived(mailMessage.getReceived());
                         managedDocument.setSent(mailMessage.getSent());
-                        managedDocument.setAssignedToYear(mailMessage.getReceived().getYear());
-                        managedDocument.setAssignedToMonth(mailMessage.getReceived().getMonthValue());
+
+                        MailContentParser.AssignedYearMonth assignedYearMonth = mailContentParser.parseMailContent(mailMessage.getContent()).orElse(mailMessage.getAssignedYearMonth());
+
+                        managedDocument.setAssignedToYear(assignedYearMonth.year().getValue());
+                        managedDocument.setAssignedToMonth(assignedYearMonth.month().getValue());
 
                         return managedDocument;
                     }).filter(managedDocument -> allowedManagedDocumentExceptions.contains(FilenameUtils.getExtension(managedDocument.getManagedFile().getFileName()))).forEach(managedDocument -> {
