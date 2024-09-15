@@ -8,12 +8,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,8 +16,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import pro.b2borganizer.services.documents.entity.ManagedDocument;
-import pro.b2borganizer.services.documents.entity.ManagedDocumentsFilter;
+import pro.b2borganizer.services.common.control.SimpleRestProviderFilter;
+import pro.b2borganizer.services.common.control.SimpleRestProviderQueryParser;
+import pro.b2borganizer.services.common.control.SimpleRestProviderRepository;
+import pro.b2borganizer.services.common.control.SimpleRestProviderResponseBuilder;
 import pro.b2borganizer.services.reports.control.MailMonthlyReportRepository;
 import pro.b2borganizer.services.reports.entity.MailMonthlyReportCreatedEvent;
 import pro.b2borganizer.services.reports.entity.MailMonthlyReportsFilter;
@@ -44,7 +41,11 @@ public class MailMonthlyReportsResource {
 
     private final ObjectMapper objectMapper;
 
-    private final MongoTemplate mongoTemplate;
+    private final SimpleRestProviderQueryParser simpleRestProviderQueryParser;
+
+    private final SimpleRestProviderRepository simpleRestProviderRepository;
+
+    private final SimpleRestProviderResponseBuilder simpleRestProviderResponseBuilder;
 
     @PostMapping
     public ResponseEntity<MailMonthlyReport> create(@Valid @RequestBody NewMailMonthlyReport newMailMonthlyReport) {
@@ -75,36 +76,14 @@ public class MailMonthlyReportsResource {
     @GetMapping(consumes = "application/json+simpleRestProvider")
     public ResponseEntity<List<MailMonthlyReport>> findAll(@RequestParam(required = false) String sort,
                                                            @RequestParam(required = false) String range,
-                                                           @RequestParam(required = false) String filter) throws JsonProcessingException {
+                                                           @RequestParam(required = false) String filter) {
 
-        int[] ranges = objectMapper.readValue(range, int[].class);
-        int pageSize = ranges[1] - ranges[0];
-        int pageNumber = ranges[0] / pageSize;
+        SimpleRestProviderQueryParser.InputParameters inputParameters = new SimpleRestProviderQueryParser.InputParameters("mail-monthly-reports", sort, range, filter);
 
-        MailMonthlyReportsFilter mailMonthlyReportsFilter = objectMapper.readValue(filter, MailMonthlyReportsFilter.class);
+        SimpleRestProviderFilter<MailMonthlyReportsFilter> simpleRestProviderFilter = simpleRestProviderQueryParser.parse(inputParameters, MailMonthlyReportsFilter.class);
 
-        log.info("Find all mail monthly reports {} {} {}.", sort, ranges, mailMonthlyReportsFilter);
+        SimpleRestProviderRepository.SimpleRestProviderQueryListResult<MailMonthlyReport> result = simpleRestProviderRepository.findByQuery(simpleRestProviderFilter, MailMonthlyReport.class);
 
-        PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
-
-        Query query = new Query();
-
-        Criteria criteria = new Criteria();
-        if (mailMonthlyReportsFilter.getYear() != null) {
-            criteria.and("year").is(mailMonthlyReportsFilter.getYear());
-        }
-        if (mailMonthlyReportsFilter.getMonth() != null) {
-            criteria.and("month").is(mailMonthlyReportsFilter.getMonth());
-        }
-        query.addCriteria(criteria);
-
-        long totalElements = mongoTemplate.count(query, MailMonthlyReport.class);
-
-        List<MailMonthlyReport> result = mongoTemplate.find(query.with(pageRequest), MailMonthlyReport.class);
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .header("Content-Range", String.format("mail-monthly-reports %s-%s/%s", ranges[0], ranges[1], totalElements))
-                .body(result);
+        return simpleRestProviderResponseBuilder.buildListResponse(simpleRestProviderFilter, result);
     }
 }

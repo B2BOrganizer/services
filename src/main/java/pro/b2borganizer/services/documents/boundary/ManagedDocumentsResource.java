@@ -127,6 +127,8 @@ public class ManagedDocumentsResource {
         managedDocument.setAssignedToMonth(updatedManagedDocument.getAssignedToMonth());
         managedDocument.setAssignedToYear(updatedManagedDocument.getAssignedToYear());
         managedDocument.setComment(updatedManagedDocument.getComment());
+        managedDocument.setRequiredDocumentId(updatedManagedDocument.getRequiredDocumentId());
+        managedDocument.setRequiredDocumentSelectionType(updatedManagedDocument.getRequiredDocumentSelectionType());
 
         return managedDocumentRepository.save(managedDocument);
     }

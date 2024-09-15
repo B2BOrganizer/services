@@ -33,6 +33,10 @@ public class ManagedDocument {
 
     private String comment;
 
+    private String requiredDocumentId;
+
+    private RequiredDocumentSelectionType requiredDocumentSelectionType = RequiredDocumentSelectionType.UNSPECIFIED;
+
     public boolean isCommented() {
         return StringUtils.isNotEmpty(comment);
     }

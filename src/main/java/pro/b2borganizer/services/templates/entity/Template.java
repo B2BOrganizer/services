@@ -1,7 +1,9 @@
 package pro.b2borganizer.services.templates.entity;
 
 import java.util.Map;
+import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -30,6 +32,6 @@ public class Template {
     @NotNull
     private String contentType;
 
-    private Map<String, String> templateVariables;
+    private Set<TemplateVariable> variables;
 }
 
