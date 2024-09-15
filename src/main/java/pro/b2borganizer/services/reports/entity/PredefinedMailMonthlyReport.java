@@ -36,7 +36,10 @@ public class PredefinedMailMonthlyReport {
 
         return subject
                 .replace("${currentMonth}", "" + now.getMonth().getValue())
-                .replace("${currentYear}", "" + now.getYear());
+                .replace("${currentYear}", "" + now.getYear())
+                .replace("${previousMonth}", "" + now.minusMonths(1).getMonth().getValue())
+                .replace("${previousYear}", "" + now.minusYears(1).getYear())
+                ;
     }
 
 }
