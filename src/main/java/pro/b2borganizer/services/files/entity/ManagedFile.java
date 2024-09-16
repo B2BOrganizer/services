@@ -6,6 +6,8 @@ import lombok.Setter;
 import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.util.MimeType;
+import org.springframework.util.MimeTypeUtils;
 
 @Getter
 @Setter
@@ -17,6 +19,12 @@ public class ManagedFile {
     private String mimeType;
 
     @ToString.Exclude
-    @JsonIgnore
     private String contentInBase64;
+
+    public boolean isPdf() {
+        MimeType pdfMimeType = MimeType.valueOf("application/pdf");
+        MimeType parseMimeType = MimeTypeUtils.parseMimeType(mimeType);
+
+        return pdfMimeType.equalsTypeAndSubtype(parseMimeType);
+    }
 }

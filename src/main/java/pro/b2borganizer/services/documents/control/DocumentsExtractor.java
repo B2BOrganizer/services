@@ -1,17 +1,35 @@
 package pro.b2borganizer.services.documents.control;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.text.MessageFormat;
-import java.time.YearMonth;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+
+import javax.imageio.ImageIO;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.rendering.ImageType;
+import org.apache.pdfbox.rendering.PDFRenderer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import pro.b2borganizer.services.documents.entity.ManagedDocument;
 import pro.b2borganizer.services.errors.boundary.MailProcessingErrorReporter;
+import pro.b2borganizer.services.files.entity.ManagedFile;
 import pro.b2borganizer.services.mails.control.MailMessageRepository;
 import pro.b2borganizer.services.mails.entity.MailReceivedEvent;
 
@@ -60,4 +78,18 @@ public class DocumentsExtractor {
             mailProcessingErrorReporter.reportException(mailReceivedEvent.getMailMessageId(), MessageFormat.format("Unable to extract documents from {0}.", mailReceivedEvent.getMailMessageId()), e);
         }
     }
+
+
+
+
+//    private static String bufferedImageToBase64(BufferedImage image) throws IOException {
+//        managedFile.setContentInBase64(Base64.encodeBase64String(IOUtils.toByteArray(bodyPart.getInputStream())));
+//
+//
+//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//        ImageIO.write(image, "PNG", baos);
+//        byte[] imageBytes = baos.toByteArray();
+//        return Base64.getEncoder().encodeToString(imageBytes);
+//    }
+
 }

@@ -2,6 +2,7 @@ package pro.b2borganizer.services.documents.entity;
 
 import java.time.LocalDateTime;
 import java.time.YearMonth;
+import java.util.List;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -22,6 +23,8 @@ public class ManagedDocument {
     private String mailMessageId;
 
     private ManagedFile managedFile;
+
+    private List<ManagedFile> managedFilePreviews;
 
     private LocalDateTime sent;
 

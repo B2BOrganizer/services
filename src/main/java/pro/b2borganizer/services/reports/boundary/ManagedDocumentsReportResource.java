@@ -99,6 +99,7 @@ public class ManagedDocumentsReportResource {
             item.setManagedDocumentReceived(managedDocument.getReceived());
             item.setManagedDocumentFileName(managedDocument.getManagedFile().getFileName());
             item.setRequiredDocumentId(managedDocument.getRequiredDocumentId());
+            item.setManagedDocumentPreviews(managedDocument.getManagedFilePreviews());
 
             if (requiredDocuments.containsKey(managedDocument.getRequiredDocumentId())) {
                 RequiredDocument requiredDocument = requiredDocuments.get(managedDocument.getRequiredDocumentId());
@@ -122,6 +123,7 @@ public class ManagedDocumentsReportResource {
                     item.setManagedDocumentFileName(null);
                     item.setRequiredDocumentId(requiredDocument.getId());
                     item.setRequiredDocumentName(requiredDocument.getName());
+                    item.setManagedDocumentPreviews(null);
                     items.add(item);
                 });
 
