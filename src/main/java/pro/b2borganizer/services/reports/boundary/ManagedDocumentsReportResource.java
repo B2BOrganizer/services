@@ -137,7 +137,7 @@ public class ManagedDocumentsReportResource {
 
         SimpleRestProviderQueryParser.InputParameters inputParameters = new SimpleRestProviderQueryParser.InputParameters("managed-documents-reports", sort, range, filter);
 
-        SimpleRestProviderFilter<SimpleFilter> simpleRestProviderFilter = simpleRestProviderQueryParser.parse(inputParameters, SimpleFilter.class);
+        SimpleRestProviderFilter simpleRestProviderFilter = simpleRestProviderQueryParser.parse(inputParameters);
 
         SimpleRestProviderRepository.SimpleRestProviderQueryListResult<ManagedDocumentsReport> result = simpleRestProviderRepository.findByQuery(simpleRestProviderFilter, ManagedDocumentsReport.class);
 

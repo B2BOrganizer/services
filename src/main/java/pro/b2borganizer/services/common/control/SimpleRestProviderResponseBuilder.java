@@ -5,12 +5,11 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import pro.b2borganizer.services.common.entity.CriteriaSupportable;
 
 @Component
 public class SimpleRestProviderResponseBuilder {
 
-    public <F extends CriteriaSupportable, R> ResponseEntity<List<R>> buildListResponse(SimpleRestProviderFilter<F> filter, SimpleRestProviderRepository.SimpleRestProviderQueryListResult<R> result) {
+    public <R> ResponseEntity<List<R>> buildListResponse(SimpleRestProviderFilter filter, SimpleRestProviderRepository.SimpleRestProviderQueryListResult<R> result) {
         ResponseEntity.BodyBuilder bodyBuilder = ResponseEntity.status(HttpStatus.OK);
 
         if (filter.isListQuery()) {

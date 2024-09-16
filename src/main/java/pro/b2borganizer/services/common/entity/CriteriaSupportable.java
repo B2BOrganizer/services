@@ -6,6 +6,4 @@ import org.springframework.data.mongodb.core.query.Criteria;
 public interface CriteriaSupportable {
 
     Criteria toCriteria();
-
-    Sort toSort();
 }

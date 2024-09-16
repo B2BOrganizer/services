@@ -22,7 +22,6 @@ import pro.b2borganizer.services.common.control.SimpleRestProviderRepository;
 import pro.b2borganizer.services.common.control.SimpleRestProviderResponseBuilder;
 import pro.b2borganizer.services.reports.control.MailMonthlyReportRepository;
 import pro.b2borganizer.services.reports.entity.MailMonthlyReportCreatedEvent;
-import pro.b2borganizer.services.reports.entity.MailMonthlyReportsFilter;
 import pro.b2borganizer.services.reports.entity.NewMailMonthlyReport;
 import pro.b2borganizer.services.reports.control.MailMonthlyReportMapper;
 import pro.b2borganizer.services.reports.entity.MailMonthlyReport;
@@ -80,7 +79,7 @@ public class MailMonthlyReportsResource {
 
         SimpleRestProviderQueryParser.InputParameters inputParameters = new SimpleRestProviderQueryParser.InputParameters("mail-monthly-reports", sort, range, filter);
 
-        SimpleRestProviderFilter<MailMonthlyReportsFilter> simpleRestProviderFilter = simpleRestProviderQueryParser.parse(inputParameters, MailMonthlyReportsFilter.class);
+        SimpleRestProviderFilter simpleRestProviderFilter = simpleRestProviderQueryParser.parse(inputParameters);
 
         SimpleRestProviderRepository.SimpleRestProviderQueryListResult<MailMonthlyReport> result = simpleRestProviderRepository.findByQuery(simpleRestProviderFilter, MailMonthlyReport.class);
 

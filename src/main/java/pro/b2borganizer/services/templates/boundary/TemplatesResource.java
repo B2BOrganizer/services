@@ -41,7 +41,7 @@ public class TemplatesResource {
 
         SimpleRestProviderQueryParser.InputParameters inputParameters = new SimpleRestProviderQueryParser.InputParameters("templates", sort, range, filter);
 
-        SimpleRestProviderFilter<SimpleFilter> simpleRestProviderFilter = simpleRestProviderQueryParser.parse(inputParameters, SimpleFilter.class);
+        SimpleRestProviderFilter simpleRestProviderFilter = simpleRestProviderQueryParser.parse(inputParameters);
 
         SimpleRestProviderRepository.SimpleRestProviderQueryListResult<Template> result = simpleRestProviderRepository.findByQuery(simpleRestProviderFilter, Template.class);
 

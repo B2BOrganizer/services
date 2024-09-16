@@ -6,10 +6,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
-import pro.b2borganizer.services.reports.entity.MailMonthlyReport;
-import pro.b2borganizer.services.reports.entity.MailMonthlyReportsFilter;
 
 @Repository
 @RequiredArgsConstructor
@@ -18,7 +15,7 @@ public class SimpleRestProviderRepository {
 
     private final MongoTemplate mongoTemplate;
 
-    public <R> SimpleRestProviderQueryListResult<R> findByQuery(SimpleRestProviderFilter<?> simpleRestProviderFilter, Class<R> entityClass) {
+    public <R> SimpleRestProviderQueryListResult<R> findByQuery(SimpleRestProviderFilter simpleRestProviderFilter, Class<R> entityClass) {
         log.info("Finding all {} for = {}.", entityClass, simpleRestProviderFilter);
 
         long totalElements = mongoTemplate.count(simpleRestProviderFilter.toCountQuery(), entityClass);

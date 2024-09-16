@@ -76,7 +76,7 @@ public class PredefinedMailMonthlyReportsResource {
 
         SimpleRestProviderQueryParser.InputParameters inputParameters = new SimpleRestProviderQueryParser.InputParameters("predefined-mail-monthly-reports", sort, range, filter);
 
-        SimpleRestProviderFilter<SimpleFilter> simpleRestProviderFilter = simpleRestProviderQueryParser.parse(inputParameters, SimpleFilter.class);
+        SimpleRestProviderFilter simpleRestProviderFilter = simpleRestProviderQueryParser.parse(inputParameters);
 
         SimpleRestProviderRepository.SimpleRestProviderQueryListResult<PredefinedMailMonthlyReport> result = simpleRestProviderRepository.findByQuery(simpleRestProviderFilter, PredefinedMailMonthlyReport.class);
 

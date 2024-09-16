@@ -4,9 +4,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.core.query.Query;
 import pro.b2borganizer.services.common.entity.CriteriaSupportable;
+import pro.b2borganizer.services.common.entity.SimpleFilter;
+import pro.b2borganizer.services.common.entity.SimpleSort;
 
 @Slf4j
-public record SimpleRestProviderFilter<F extends CriteriaSupportable>(String name, F filter, Pagination pagination) {
+public record SimpleRestProviderFilter(String name, SimpleFilter simpleFilter, Pagination pagination, SimpleSort simpleSort) {
 
     public boolean isListQuery() {
         return pagination.isPaged();
@@ -14,22 +16,23 @@ public record SimpleRestProviderFilter<F extends CriteriaSupportable>(String nam
 
     public Query toFilterQuery() {
         Query query = new Query();
-        query.addCriteria(filter.toCriteria());
+        query.addCriteria(simpleFilter.toCriteria());
+        query.with(simpleSort.toSort());
 
         if (isListQuery()) {
             query = query.with(pagination.getPageRequest());
         }
 
-        log.info("Filter query: {}", query);
+        log.info("Filter query {}: {}", name, query);
 
         return query;
     }
 
     public Query toCountQuery() {
         Query query = new Query();
-        query.addCriteria(filter.toCriteria());
+        query.addCriteria(simpleFilter.toCriteria());
 
-        log.info("Count query: {}", query);
+        log.info("Count query {}: {}", name, query);
 
         return query;
     }

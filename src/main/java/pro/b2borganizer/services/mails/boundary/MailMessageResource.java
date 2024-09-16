@@ -66,7 +66,7 @@ public class MailMessageResource {
 
         SimpleRestProviderQueryParser.InputParameters inputParameters = new SimpleRestProviderQueryParser.InputParameters("mail-messages", sort, range, filter);
 
-        SimpleRestProviderFilter<SimpleFilter> simpleRestProviderFilter = simpleRestProviderQueryParser.parse(inputParameters, SimpleFilter.class);
+        SimpleRestProviderFilter simpleRestProviderFilter = simpleRestProviderQueryParser.parse(inputParameters);
 
         SimpleRestProviderRepository.SimpleRestProviderQueryListResult<MailMessage> result = simpleRestProviderRepository.findByQuery(simpleRestProviderFilter, MailMessage.class);
 

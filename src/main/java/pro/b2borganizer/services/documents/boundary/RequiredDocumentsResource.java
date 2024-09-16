@@ -74,7 +74,7 @@ public class RequiredDocumentsResource {
 
         SimpleRestProviderQueryParser.InputParameters inputParameters = new SimpleRestProviderQueryParser.InputParameters("required-monthly-documents", sort, range, filter);
 
-        SimpleRestProviderFilter<SimpleFilter> simpleRestProviderFilter = simpleRestProviderQueryParser.parse(inputParameters, SimpleFilter.class);
+        SimpleRestProviderFilter simpleRestProviderFilter = simpleRestProviderQueryParser.parse(inputParameters);
 
         SimpleRestProviderRepository.SimpleRestProviderQueryListResult<RequiredDocument> result = simpleRestProviderRepository.findByQuery(simpleRestProviderFilter, RequiredDocument.class);
 

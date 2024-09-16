@@ -6,19 +6,13 @@ import java.util.List;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mongodb.client.model.Filters;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.codec.binary.Base64;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.Headers;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -29,13 +23,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
+import pro.b2borganizer.services.common.control.SimpleRestProviderFilter;
+import pro.b2borganizer.services.common.control.SimpleRestProviderQueryParser;
+import pro.b2borganizer.services.common.control.SimpleRestProviderRepository;
+import pro.b2borganizer.services.common.control.SimpleRestProviderResponseBuilder;
 import pro.b2borganizer.services.documents.control.ManagedDocumentRepository;
 import pro.b2borganizer.services.documents.entity.ManagedDocument;
-import pro.b2borganizer.services.documents.entity.ManagedDocumentsFilter;
 import pro.b2borganizer.services.documents.entity.UpdateManagedDocumentFields;
 import pro.b2borganizer.services.documents.entity.UpdatedManagedDocument;
-import pro.b2borganizer.services.mails.entity.MailMessage;
 
 @RestController
 @RequestMapping("/managed-documents")
@@ -48,6 +43,12 @@ public class ManagedDocumentsResource {
     private final MongoTemplate mongoTemplate;
 
     private final ObjectMapper objectMapper;
+
+    private final SimpleRestProviderQueryParser simpleRestProviderQueryParser;
+
+    private final SimpleRestProviderRepository simpleRestProviderRepository;
+
+    private final SimpleRestProviderResponseBuilder simpleRestProviderResponseBuilder;
 
     @GetMapping
     public ResponseEntity<List<ManagedDocument>> findAll(@RequestParam(required = false) LocalDate from, @RequestParam(required = false) LocalDate to) {
@@ -76,35 +77,15 @@ public class ManagedDocumentsResource {
                                                          @RequestParam(required = false) String range,
                                                          @RequestParam(required = false) String filter) throws JsonProcessingException {
 
-        int[] ranges = objectMapper.readValue(range, int[].class);
-        int pageSize = ranges[1] - ranges[0];
-        int pageNumber = ranges[0] / pageSize;
+        log.info("Find all managed documents sort = {}, range = {}, filter = {}.", sort, range, filter);
 
-        ManagedDocumentsFilter managedDocumentsFilter = objectMapper.readValue(filter, ManagedDocumentsFilter.class);
+        SimpleRestProviderQueryParser.InputParameters inputParameters = new SimpleRestProviderQueryParser.InputParameters("managed-documents", sort, range, filter);
 
-        log.info("Find all managed documents {} {} {}.", sort, ranges, managedDocumentsFilter);
+        SimpleRestProviderFilter simpleRestProviderFilter = simpleRestProviderQueryParser.parse(inputParameters);
 
-        PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
+        SimpleRestProviderRepository.SimpleRestProviderQueryListResult<ManagedDocument> result = simpleRestProviderRepository.findByQuery(simpleRestProviderFilter, ManagedDocument.class);
 
-        Query query = new Query();
-
-        Criteria criteria = new Criteria();
-        if (managedDocumentsFilter.getAssignedToYear() != null) {
-            criteria.and("assignedToYear").is(managedDocumentsFilter.getAssignedToYear());
-        }
-        if (managedDocumentsFilter.getAssignedToMonth() != null) {
-            criteria.and("assignedToMonth").is(managedDocumentsFilter.getAssignedToMonth());
-        }
-        query.addCriteria(criteria);
-
-        long totalElements = mongoTemplate.count(query, ManagedDocument.class);
-
-        List<ManagedDocument> result = mongoTemplate.find(query.with(pageRequest), ManagedDocument.class);
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .header("Content-Range", String.format("managed-documents %s-%s/%s", ranges[0], ranges[1], totalElements))
-                .body(result);
+        return simpleRestProviderResponseBuilder.buildListResponse(simpleRestProviderFilter, result);
     }
 
     @GetMapping("/{id}")
