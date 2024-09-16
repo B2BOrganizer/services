@@ -49,6 +49,8 @@ public class DocumentsExtractor {
     @Value("#{'${pro.b2borganizer.allowedManagedDocumentExtensions}'.split(',')}")
     private Set<String> allowedManagedDocumentExceptions;
 
+    private final DocumentPreviewsGenerator documentPreviewsGenerator;
+
     @EventListener
     public void extractDocuments(MailReceivedEvent mailReceivedEvent) {
         log.info("Extracting documents for = {}.", mailReceivedEvent);
@@ -67,6 +69,13 @@ public class DocumentsExtractor {
                         managedDocument.setAssignedToYear(assignedYearMonth.year().getValue());
                         managedDocument.setAssignedToMonth(assignedYearMonth.month().getValue());
 
+                        try {
+                            List<ManagedFile> previews = documentPreviewsGenerator.generatePreviews(managedDocument.getManagedFile());
+                            managedDocument.setManagedFilePreviews(previews);
+                        } catch (Exception e) {
+                            log.info("Unable to generate previews for managed document = {}.", managedDocument, e);
+                        }
+
                         return managedDocument;
                     }).filter(managedDocument -> allowedManagedDocumentExceptions.contains(FilenameUtils.getExtension(managedDocument.getManagedFile().getFileName()))).forEach(managedDocument -> {
                         log.info("Document extracted = {}.", managedDocument);
@@ -78,18 +87,4 @@ public class DocumentsExtractor {
             mailProcessingErrorReporter.reportException(mailReceivedEvent.getMailMessageId(), MessageFormat.format("Unable to extract documents from {0}.", mailReceivedEvent.getMailMessageId()), e);
         }
     }
-
-
-
-
-//    private static String bufferedImageToBase64(BufferedImage image) throws IOException {
-//        managedFile.setContentInBase64(Base64.encodeBase64String(IOUtils.toByteArray(bodyPart.getInputStream())));
-//
-//
-//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//        ImageIO.write(image, "PNG", baos);
-//        byte[] imageBytes = baos.toByteArray();
-//        return Base64.getEncoder().encodeToString(imageBytes);
-//    }
-
 }

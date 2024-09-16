@@ -7,8 +7,12 @@ import io.mongock.api.annotations.Execution;
 import io.mongock.api.annotations.RollbackExecution;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.stereotype.Component;
 import pro.b2borganizer.services.documents.control.DocumentPreviewsGenerator;
+import pro.b2borganizer.services.documents.control.ManagedDocumentPreviewsGenerator;
 import pro.b2borganizer.services.documents.control.ManagedDocumentRepository;
+import pro.b2borganizer.services.documents.entity.ManagedDocumentPreviewsGenerationEvent;
 import pro.b2borganizer.services.documents.entity.UnableToGeneratePreviewsException;
 import pro.b2borganizer.services.files.entity.ManagedFile;
 
@@ -16,24 +20,12 @@ import pro.b2borganizer.services.files.entity.ManagedFile;
 @Slf4j
 @RequiredArgsConstructor
 public class ChangeSet_16_09_2024_001 {
-    private final ManagedDocumentRepository managedDocumentRepository;
 
-    private final DocumentPreviewsGenerator documentPreviewsGenerator;
+    private final ManagedDocumentPreviewsGenerator managedDocumentPreviewsGenerator;
 
     @Execution
     public void changeSet() {
-        managedDocumentRepository.findAll().forEach(managedDocument -> {
-            try {
-                log.info("Generating previews for managed document = {}.", managedDocument);
-                List<ManagedFile> previews = documentPreviewsGenerator.generatePreviews(managedDocument.getManagedFile());
-
-                managedDocument.setManagedFilePreviews(previews);
-
-                managedDocumentRepository.save(managedDocument);
-            } catch (UnableToGeneratePreviewsException e) {
-                log.error("Unable to generate previews for managed document = {}.", managedDocument, e);
-            }
-        });
+        managedDocumentPreviewsGenerator.generate(ManagedDocumentPreviewsGenerationEvent.builder().type(ManagedDocumentPreviewsGenerationEvent.Type.ALL).build());
     }
 
     @RollbackExecution
