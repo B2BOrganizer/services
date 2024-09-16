@@ -2,6 +2,7 @@ package pro.b2borganizer.services.common.entity;
 
 import java.util.List;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.query.Criteria;
 
 public record SimpleFilter(List<String> id) implements CriteriaSupportable {
@@ -12,5 +13,10 @@ public record SimpleFilter(List<String> id) implements CriteriaSupportable {
             criteria.and("id").in(id);
         }
         return criteria;
+    }
+
+    @Override
+    public Sort toSort() {
+        return Sort.by(Sort.Order.asc("id"));
     }
 }

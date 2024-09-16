@@ -48,5 +48,9 @@ public class SimpleRestProviderQueryParser {
         public boolean hasRange() {
             return range != null;
         }
+
+        public boolean hasSort() {
+            return sort != null;
+        }
     }
 }

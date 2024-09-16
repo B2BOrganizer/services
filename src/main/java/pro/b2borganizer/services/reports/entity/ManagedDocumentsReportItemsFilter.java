@@ -1,5 +1,6 @@
 package pro.b2borganizer.services.reports.entity;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.query.Criteria;
 import pro.b2borganizer.services.common.entity.CriteriaSupportable;
 
@@ -11,5 +12,10 @@ public record ManagedDocumentsReportItemsFilter(String managedDocumentsReportId)
             criteria.and("managedDocumentsReportId").is(managedDocumentsReportId);
         }
         return criteria;
+    }
+
+    @Override
+    public Sort toSort() {
+        return null;
     }
 }

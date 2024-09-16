@@ -3,6 +3,7 @@ package pro.b2borganizer.services.reports.entity;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.query.Criteria;
 import pro.b2borganizer.services.common.entity.CriteriaSupportable;
 
@@ -26,5 +27,10 @@ public class MailMonthlyReportsFilter implements CriteriaSupportable {
         }
 
         return criteria;
+    }
+
+    @Override
+    public Sort toSort() {
+        return Sort.by(Sort.Order.asc("id"));
     }
 }

@@ -50,7 +50,7 @@ public class MailMonthlyReportMapper {
         mailMonthlyReport.setSubject(newMailMonthlyReport.getSubject());
         mailMonthlyReport.setMonth(newMailMonthlyReport.getMonth());
         mailMonthlyReport.setYear(newMailMonthlyReport.getYear());
-        mailMonthlyReport.setManagedDocuments(managedDocuments);
+        mailMonthlyReport.setManagedDocumentIds(managedDocuments.stream().map(ManagedDocument::getId).toList());
 
         return mailMonthlyReport;
     }

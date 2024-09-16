@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import pro.b2borganizer.services.documents.entity.ManagedDocument;
@@ -51,7 +52,7 @@ public class MailMonthlyReport {
     @NotNull
     private int year;
 
-    private List<ManagedDocument> managedDocuments;
+    private List<String> managedDocumentIds;
 
     public Map<String, Object> getTemplateVariables() {
         if (templateVariables == null) {
