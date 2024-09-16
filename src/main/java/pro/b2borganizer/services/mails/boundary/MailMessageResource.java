@@ -3,20 +3,24 @@ package pro.b2borganizer.services.mails.boundary;
 import java.time.LocalDate;
 import java.util.List;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import pro.b2borganizer.services.common.control.SimpleRestProviderFilter;
+import pro.b2borganizer.services.common.control.SimpleRestProviderQueryParser;
+import pro.b2borganizer.services.common.control.SimpleRestProviderRepository;
+import pro.b2borganizer.services.common.control.SimpleRestProviderResponseBuilder;
+import pro.b2borganizer.services.common.entity.SimpleFilter;
 import pro.b2borganizer.services.mails.control.MailMessageRepository;
 import pro.b2borganizer.services.mails.entity.MailMessage;
-import pro.b2borganizer.services.mails.entity.MailMessagesFilter;
 
 @RestController
 @RequestMapping("/mail-messages")
@@ -29,6 +33,12 @@ public class MailMessageResource {
     private final MongoTemplate mongoTemplate;
 
     private final ObjectMapper objectMapper;
+
+    private final SimpleRestProviderQueryParser simpleRestProviderQueryParser;
+
+    private final SimpleRestProviderRepository simpleRestProviderRepository;
+
+    private final SimpleRestProviderResponseBuilder simpleRestProviderResponseBuilder;
 
     @GetMapping
     public List<MailMessage> findAll(@RequestParam(required = false) LocalDate from,
@@ -50,18 +60,16 @@ public class MailMessageResource {
     }
 
     @GetMapping(consumes = "application/json+simpleRestProvider")
-    public List<MailMessage> findAllWithSimpleRestProvider(@RequestParam(required = false) String filter) {
-        try {
-            MailMessagesFilter mailMessagesFilter = objectMapper.readValue(filter, MailMessagesFilter.class);
+    public ResponseEntity<List<MailMessage>> findAllWithSimpleRestProvider(@RequestParam(required = false) String sort,
+                                                                           @RequestParam(required = false) String range,
+                                                                           @RequestParam(required = false) String filter) {
 
-            log.info("Find all mail messages with filter = {}.", filter);
+        SimpleRestProviderQueryParser.InputParameters inputParameters = new SimpleRestProviderQueryParser.InputParameters("mail-messages", sort, range, filter);
 
-            Query query = new Query();
-            query.addCriteria(Criteria.where("id").in(mailMessagesFilter.getId()));
+        SimpleRestProviderFilter<SimpleFilter> simpleRestProviderFilter = simpleRestProviderQueryParser.parse(inputParameters, SimpleFilter.class);
 
-            return mongoTemplate.find(query, MailMessage.class);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+        SimpleRestProviderRepository.SimpleRestProviderQueryListResult<MailMessage> result = simpleRestProviderRepository.findByQuery(simpleRestProviderFilter, MailMessage.class);
+
+        return simpleRestProviderResponseBuilder.buildListResponse(simpleRestProviderFilter, result);
     }
 }
