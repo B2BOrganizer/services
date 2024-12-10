@@ -47,7 +47,9 @@ public record SimpleFilter(Map<SimpleFilterKey, Object> filters) implements Crit
                 .flatMap(List::stream)
                 .toList();
 
-        criteria.andOperator(allCriteria.toArray(new Criteria[0]));
+        if (!allCriteria.isEmpty()) {
+            criteria.andOperator(allCriteria.toArray(new Criteria[0]));
+        }
 
         return criteria;
     }
