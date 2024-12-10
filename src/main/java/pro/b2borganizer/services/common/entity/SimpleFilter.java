@@ -36,11 +36,18 @@ public record SimpleFilter(Map<SimpleFilterKey, Object> filters) implements Crit
     public Criteria toCriteria() {
         Criteria criteria = new Criteria();
 
-        filters.entrySet().stream()
+        List<List<Criteria>> groupedCriteria = filters.entrySet().stream()
                 .collect(Collectors.groupingBy(e -> e.getKey().key))
                 .values()
-                .stream().map(v -> v.stream().map(e -> e.getKey().toCriteria(e.getValue())).toList())
-                .forEach(criteria::andOperator);
+                .stream()
+                .map(v -> v.stream().map(e -> e.getKey().toCriteria(e.getValue())).toList())
+                .toList();
+
+        List<Criteria> allCriteria = groupedCriteria.stream()
+                .flatMap(List::stream)
+                .toList();
+
+        criteria.andOperator(allCriteria.toArray(new Criteria[0]));
 
         return criteria;
     }
