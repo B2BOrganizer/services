@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
 import pro.b2borganizer.services.timesheets.entity.WorkLog;
 
 @Repository
-public interface WorkLogsRepository extends MongoRepository<WorkLog, LocalDate> {
+public interface WorkLogsRepository extends MongoRepository<WorkLog, String> {
     Optional<WorkLog> findOptionalByDay(LocalDate day);
 }

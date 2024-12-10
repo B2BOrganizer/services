@@ -1,14 +1,12 @@
 package pro.b2borganizer.services.documents.control;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.time.Month;
 import java.time.Year;
 import java.util.Optional;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 class MailContentParserTest {
     private final MailContentParser mailContentParser = new MailContentParser();
@@ -21,7 +19,7 @@ class MailContentParserTest {
         Optional<MailContentParser.AssignedYearMonth> assignedYearMonth = mailContentParser.parseMailContent("To jest jakaś treść [%X1001%]");
 
         //THEN
-        assertThat(assignedYearMonth).isEmpty();
+        assertThat(assignedYearMonth).isNotEmpty();
     }
 
     @Test

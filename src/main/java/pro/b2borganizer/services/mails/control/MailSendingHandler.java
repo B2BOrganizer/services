@@ -19,6 +19,7 @@ import pro.b2borganizer.services.mails.entity.MailToSend;
 public class MailSendingHandler {
 
     private final JavaMailSender javaMailSender;
+
     @ServiceActivator(inputChannel = "mailOutputChannel")
     public void handle(Message<MailToSend> message) {
         try {

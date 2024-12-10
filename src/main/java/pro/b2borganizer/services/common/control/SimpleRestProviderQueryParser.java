@@ -3,6 +3,7 @@ package pro.b2borganizer.services.common.control;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -24,7 +25,15 @@ public class SimpleRestProviderQueryParser {
     public SimpleRestProviderFilter parse(InputParameters inputParameters) {
         try {
             log.info("Parsing query = {}.", inputParameters);
-            Map<String, Object> filters = objectMapper.readValue(inputParameters.filter, new TypeReference<>() {});
+            Map<String, Object> parsedFilters = objectMapper.readValue(inputParameters.filter, new TypeReference<>() {});
+            Map<SimpleFilter.SimpleFilterKey, Object> filters = parsedFilters.entrySet().stream()
+                    .collect(Collectors.toMap(
+                            entry -> {
+                                SimpleFilter.KeyType keyType = entry.getValue() instanceof List ? SimpleFilter.KeyType.IN : SimpleFilter.KeyType.EQUALS;
+                                return new SimpleFilter.SimpleFilterKey(entry.getKey(), keyType);
+                            },
+                            Map.Entry::getValue)
+                    );
 
             SimpleRestProviderFilter.Pagination pagination;
             if (inputParameters.hasRange()) {

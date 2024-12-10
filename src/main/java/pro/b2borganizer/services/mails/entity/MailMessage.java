@@ -39,13 +39,17 @@ public class MailMessage {
     private LocalDateTime sent;
 
     @JsonIgnore
+    @ToString.Exclude
     private String plainTextContent;
 
     @JsonIgnore
+    @ToString.Exclude
     private String htmlContent;
 
+    @JsonIgnore
     private List<MailAttachment> contentRelatedMailAttachments = new ArrayList<>();
 
+    @JsonIgnore
     private List<MailAttachment> mailAttachments = new ArrayList<>();
 
     private List<MailParseError> mailParseErrors = new ArrayList<>();

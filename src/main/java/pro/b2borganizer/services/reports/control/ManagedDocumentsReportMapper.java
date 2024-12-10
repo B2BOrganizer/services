@@ -8,6 +8,9 @@ import pro.b2borganizer.services.reports.entity.NewManagedDocumentsReport;
 @Mapper(componentModel = "spring")
 public interface ManagedDocumentsReportMapper {
 
+    /**
+     * @param newManagedDocumentsReport
+     * @return
+     */
     @Mapping(target = "id", ignore = true)
-    ManagedDocumentsReport map(NewManagedDocumentsReport newManagedDocumentsReport);
-}
+    ManagedDocumentsReport map(NewManagedDocumentsReport newManagedDocumentsReport); }

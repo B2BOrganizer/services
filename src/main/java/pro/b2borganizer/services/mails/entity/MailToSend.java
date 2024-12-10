@@ -15,6 +15,7 @@ public class MailToSend {
 
     private String subject;
 
+    @ToString.Exclude
     private String content;
 
     private String to;

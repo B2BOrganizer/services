@@ -1,6 +1,8 @@
 package pro.b2borganizer.services.files.entity;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -19,6 +21,7 @@ public class ManagedFile {
     private String mimeType;
 
     @ToString.Exclude
+    @JsonIgnore
     private String contentInBase64;
 
     public boolean isPdf() {

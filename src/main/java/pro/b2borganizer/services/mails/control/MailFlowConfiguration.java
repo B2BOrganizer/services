@@ -1,7 +1,9 @@
 package pro.b2borganizer.services.mails.control;
 
+import java.time.Duration;
 import java.util.Properties;
 
+import jakarta.mail.AuthenticationFailedException;
 import jakarta.mail.URLName;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +18,10 @@ import org.springframework.integration.mail.ImapMailReceiver;
 import org.springframework.integration.mail.MailReceiver;
 import org.springframework.integration.mail.dsl.ImapMailInboundChannelAdapterSpec;
 import org.springframework.integration.mail.dsl.Mail;
+import org.springframework.integration.scheduling.PollerMetadata;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
+import org.springframework.scheduling.support.PeriodicTrigger;
 
 @Configuration
 @Slf4j
@@ -30,13 +36,12 @@ public class MailFlowConfiguration {
         javaMailProperties.put("mail.debug", "false");
 
         URLName urlName = new URLName(mailReceiverProperties.protocol(), mailReceiverProperties.host(), mailReceiverProperties.port(), mailReceiverProperties.folder(), mailReceiverProperties.username(), mailReceiverProperties.password());
-        ImapMailReceiver imapMailReceiver = new ImapMailReceiver();
-        imapMailReceiver.setJavaMailProperties(javaMailProperties);
 
         ImapMailInboundChannelAdapterSpec imapMailInboundChannelAdapterSpec = Mail.imapInboundAdapter(urlName.toString())
                 .shouldMarkMessagesAsRead(false)
                 .shouldDeleteMessages(false)
                 .simpleContent(true)
+                .autoCloseFolder(true)
                 .javaMailProperties(javaMailProperties);
 
         return IntegrationFlow

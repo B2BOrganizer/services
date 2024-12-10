@@ -38,6 +38,8 @@ public record SimpleRestProviderFilter(String name, SimpleFilter simpleFilter, P
     }
 
     public record Pagination(int pageSize, int pageNumber, int rangeStart, int rangeEnd) {
+        public static final Pagination EMPTY = new Pagination(-1, -1, -1, -1);
+
         public PageRequest getPageRequest() {
             return PageRequest.of(pageNumber, pageSize);
         }

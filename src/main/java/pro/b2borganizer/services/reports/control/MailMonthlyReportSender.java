@@ -4,16 +4,17 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import pro.b2borganizer.services.documents.control.ManagedDocumentRepository;
+import pro.b2borganizer.services.documents.entity.ManagedDocument;
 import pro.b2borganizer.services.mails.control.MailGateway;
 import pro.b2borganizer.services.mails.entity.MailToSend;
 import pro.b2borganizer.services.reports.entity.MailMonthlyReportCreatedEvent;
-import pro.b2borganizer.services.documents.entity.ManagedDocument;
 import pro.b2borganizer.services.reports.entity.MailMonthlyReportStatus;
 
 @Component
