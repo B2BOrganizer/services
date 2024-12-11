@@ -2,6 +2,7 @@ package pro.b2borganizer.services.common.entity;
 
 import java.net.CookieManager;
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -24,11 +25,19 @@ public record SimpleFilter(Map<SimpleFilterKey, Object> filters) implements Crit
         public Criteria toCriteria(Object value) {
             return switch (type) {
                 case EQUALS -> Criteria.where(key).is(value);
-                case IN -> Criteria.where(key).in(value);
+                case IN -> toInCriteria(value);
                 case GREATER_THAN -> Criteria.where(key).gt(value);
                 case LESS_THAN -> Criteria.where(key).lt(value);
                 case LESS_THAN_EQUALS -> Criteria.where(key).lte(value);
             };
+        }
+
+        private Criteria toInCriteria(Object value) {
+            if (value instanceof Collection<?> collectionValue) {
+                return Criteria.where(key).in(collectionValue);
+            } else {
+                return Criteria.where(key).in(value);
+            }
         }
     }
 
