@@ -55,6 +55,7 @@ public class SecurityConfiguration {
                             CorsConfiguration corsConfiguration = new CorsConfiguration();
                             corsConfiguration.setAllowedOrigins(List.of(
                                     "https://b2borganizer.lagowska46.ovh",
+                                    "https://b2borganizer.lagowska46.ovh/api",
                                     "http://localhost:5173"
                             ));
                             corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
