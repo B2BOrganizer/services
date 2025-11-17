@@ -53,9 +53,13 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(request -> {
                             CorsConfiguration corsConfiguration = new CorsConfiguration();
-                            corsConfiguration.setAllowedOrigins(List.of("*"));
-                            corsConfiguration.setAllowedMethods(List.of("*"));
+                            corsConfiguration.setAllowedOrigins(List.of(
+                                    "https://b2borganizer.lagowska46.ovh",
+                                    "http://localhost:5173"
+                            ));
+                            corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
                             corsConfiguration.setAllowedHeaders(List.of("*"));
+                            corsConfiguration.setAllowCredentials(true);
                             corsConfiguration.addExposedHeader("Content-Range");
                             return corsConfiguration;
                         }))
