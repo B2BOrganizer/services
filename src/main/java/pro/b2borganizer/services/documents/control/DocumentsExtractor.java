@@ -77,7 +77,7 @@ public class DocumentsExtractor {
                         }
 
                         return managedDocument;
-                    }).filter(managedDocument -> allowedManagedDocumentExceptions.contains(FilenameUtils.getExtension(managedDocument.getManagedFile().getFileName()))).forEach(managedDocument -> {
+                    }).filter(managedDocument -> allowedManagedDocumentExceptions.contains(FilenameUtils.getExtension(managedDocument.getManagedFile().getFileName()).toLowerCase())).forEach(managedDocument -> {
                         log.info("Document extracted = {}.", managedDocument);
 
                         managedDocumentRepository.save(managedDocument);

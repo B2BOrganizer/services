@@ -10,6 +10,7 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.Part;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeMultipart;
+import jakarta.mail.internet.MimeUtility;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
@@ -148,7 +149,11 @@ public class MimeMessageParser {
 
     private MailAttachment buildMailAttachment(BodyPart bodyPart) throws MessagingException, IOException {
         ManagedFile managedFile = new ManagedFile();
-        managedFile.setFileName(bodyPart.getFileName());
+        String fileName = bodyPart.getFileName();
+        if (fileName != null) {
+            fileName = MimeUtility.decodeText(fileName);
+        }
+        managedFile.setFileName(fileName);
         managedFile.setMimeType(bodyPart.getContentType());
         managedFile.setContentInBase64(Base64.encodeBase64String(IOUtils.toByteArray(bodyPart.getInputStream())));
 
