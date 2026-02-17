@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.ai.embedding.EmbeddingModel;
-import org.springframework.ai.embedding.EmbeddingResponse;
 import org.springframework.stereotype.Service;
 import pro.b2borganizer.services.documents.entity.DocumentEmbedding;
 import pro.b2borganizer.services.documents.entity.ManagedDocument;
@@ -49,21 +48,19 @@ public class DocumentEmbeddingService {
         String textToEmbed = text.length() > 10000 ? text.substring(0, 10000) : text;
 
         try {
-            // Generate embedding using Spring AI
-            EmbeddingResponse response = embeddingModel.embedForResponse(List.of(textToEmbed));
+            float[] output = embeddingModel.embed(textToEmbed);
 
-            if (response == null || response.getResults().isEmpty()) {
+            if (output == null || output.length == 0) {
                 log.error("Failed to generate embedding for document: {}", managedDocument.getId());
                 return null;
             }
 
-            float[] output = response.getResults().get(0).getOutput();
             List<Double> embeddingVector = new ArrayList<>(output.length);
             for (float value : output) {
                 embeddingVector.add((double) value);
             }
 
-            // Create and save DocumentEmbedding
+
             DocumentEmbedding documentEmbedding = new DocumentEmbedding();
             documentEmbedding.setManagedDocumentId(managedDocument.getId());
             documentEmbedding.setEmbedding(embeddingVector);
