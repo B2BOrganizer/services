@@ -41,6 +41,8 @@ public class ManagedDocument {
 
     private RequiredDocumentSelectionType requiredDocumentSelectionType = RequiredDocumentSelectionType.UNSPECIFIED;
 
+    private Double aiConfidence;
+
     public boolean isCommented() {
         return StringUtils.isNotEmpty(comment);
     }

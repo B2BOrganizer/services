@@ -34,6 +34,7 @@ public class MailFlowConfiguration {
     public IntegrationFlow inboundMailFlow() {
         Properties javaMailProperties = new Properties();
         javaMailProperties.put("mail.debug", "false");
+        javaMailProperties.put("mail.mime.address.strict", "false");
 
         URLName urlName = new URLName(mailReceiverProperties.protocol(), mailReceiverProperties.host(), mailReceiverProperties.port(), mailReceiverProperties.folder(), mailReceiverProperties.username(), mailReceiverProperties.password());
 
